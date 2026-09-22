@@ -1,1 +1,433 @@
 
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Uzskaite">
+    <title>Darbinieku Uzskaites Sistēma</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --success-color: #16a34a;
+            --danger-color: #dc2626;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 12px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 20px;
+            color: #0f172a;
+        }
+
+        /* Top Bar: Reset immediately under title */
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Controls / Inputs */
+        .add-worker-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .add-worker-form input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .page-tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tab-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .action-btn.new-page {
+            background: var(--success-color);
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            margin-top: 12px;
+        }
+
+        .action-btn.danger {
+            background: var(--danger-color);
+        }
+
+        /* Table styling */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        th, td {
+            padding: 8px 6px;
+            border: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        td.worker-name {
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            min-width: 130px;
+        }
+
+        .status-btn {
+            width: 100%;
+            padding: 8px 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: #f8fafc;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.15s ease;
+        }
+
+        .status-btn.par-btn.active {
+            background-color: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .status-btn.pret-btn.active {
+            background-color: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+        }
+
+        .total-cell {
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #f8fafc;
+        }
+
+        .total-par { color: var(--success-color); }
+        .total-pret { color: var(--danger-color); }
+
+        .footer-actions {
+            margin-top: 16px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        @media print {
+            .top-bar, .add-worker-form, .page-tabs, .action-btn, .footer-actions {
+                display: none !important;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Darbinieku Uzskaites Sistēma</h1>
+
+    <!-- 1. Reset button placed immediately under title -->
+    <div class="top-bar">
+        <button class="action-btn danger" onclick="resetAllData()">Atiestatīt visus datus</button>
+    </div>
+
+    <!-- 2. Add worker section -->
+    <div class="add-worker-form">
+        <input type="text" id="newWorkerName" placeholder="Ievadiet darbinieka vārdu...">
+        <button class="action-btn" onclick="addWorker()">Pievienot darbinieku</button>
+    </div>
+
+    <!-- 3. Page tabs -->
+    <div class="page-tabs" id="pageTabs"></div>
+
+    <!-- 4. Table -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 28%;">Vārds</th>
+                    <th style="width: 18%;">Par</th>
+                    <th style="width: 18%;">Pret</th>
+                    <th style="width: 18%;">Kopā "Par"</th>
+                    <th style="width: 18%;">Kopā "Pret"</th>
+                </tr>
+            </thead>
+            <tbody id="workerTableBody">
+                <!-- Dynamic rows -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 5. "New Page" button under table -->
+    <button class="action-btn new-page" onclick="createNewPage()">+ Jauna lapa</button>
+
+    <!-- 6. Export/Print Actions -->
+    <div class="footer-actions">
+        <button class="action-btn" onclick="exportDataJSON()">Eksportēt JSON</button>
+        <button class="action-btn" onclick="exportPDF()">Saglabāt PDF / Drukāt</button>
+    </div>
+</div>
+
+<script>
+    let state = {
+        workers: [],
+        pages: [],
+        currentPageId: 1
+    };
+
+    function loadState() {
+        const saved = localStorage.getItem('worker_app_state_v3');
+        if (saved) {
+            try {
+                state = JSON.parse(saved);
+            } catch (e) {
+                initDefaultState();
+            }
+        } else {
+            initDefaultState();
+        }
+        render();
+    }
+
+    function initDefaultState() {
+        state = {
+            workers: [
+                { id: 1, name: 'Jānis Bērziņš' },
+                { id: 2, name: 'Pēteris Kļaviņš' }
+            ],
+            pages: [
+                { id: 1, name: '1. lapa', votes: {} }
+            ],
+            currentPageId: 1
+        };
+        saveState();
+    }
+
+    function saveState() {
+        localStorage.setItem('worker_app_state_v3', JSON.stringify(state));
+    }
+
+    function render() {
+        renderTabs();
+        renderTable();
+    }
+
+    function renderTabs() {
+        const tabsContainer = document.getElementById('pageTabs');
+        tabsContainer.innerHTML = '';
+        state.pages.forEach(page => {
+            const btn = document.createElement('button');
+            btn.className = `tab-btn ${page.id === state.currentPageId ? 'active' : ''}`;
+            btn.innerText = page.name;
+            btn.onclick = () => {
+                state.currentPageId = page.id;
+                saveState();
+                render();
+            };
+            tabsContainer.appendChild(btn);
+        });
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('workerTableBody');
+        tbody.innerHTML = '';
+
+        const currentPage = state.pages.find(p => p.id === state.currentPageId) || state.pages[0];
+
+        state.workers.forEach(worker => {
+            const tr = document.createElement('tr');
+
+            // Name
+            const tdName = document.createElement('td');
+            tdName.className = 'worker-name';
+            tdName.innerText = worker.name;
+            tr.appendChild(tdName);
+
+            const currentVote = currentPage.votes[worker.id] || null;
+
+            // "Par"
+            const tdPar = document.createElement('td');
+            const btnPar = document.createElement('button');
+            btnPar.className = `status-btn par-btn ${currentVote === 'par' ? 'active' : ''}`;
+            btnPar.innerText = currentVote === 'par' ? '✓ Par' : 'par';
+            btnPar.onclick = () => toggleVote(worker.id, 'par');
+            tdPar.appendChild(btnPar);
+            tr.appendChild(tdPar);
+
+            // "Pret"
+            const tdPret = document.createElement('td');
+            const btnPret = document.createElement('button');
+            btnPret.className = `status-btn pret-btn ${currentVote === 'pret' ? 'active' : ''}`;
+            btnPret.innerText = currentVote === 'pret' ? '✕ Pret' : 'pret';
+            btnPret.onclick = () => toggleVote(worker.id, 'pret');
+            tdPret.appendChild(btnPret);
+            tr.appendChild(tdPret);
+
+            // Totals
+            let totalPar = 0;
+            let totalPret = 0;
+            state.pages.forEach(p => {
+                if (p.votes[worker.id] === 'par') totalPar++;
+                if (p.votes[worker.id] === 'pret') totalPret++;
+            });
+
+            const tdTotalPar = document.createElement('td');
+            tdTotalPar.className = 'total-cell total-par';
+            tdTotalPar.innerText = totalPar;
+            tr.appendChild(tdTotalPar);
+
+            const tdTotalPret = document.createElement('td');
+            tdTotalPret.className = 'total-cell total-pret';
+            tdTotalPret.innerText = totalPret;
+            tr.appendChild(tdTotalPret);
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    function toggleVote(workerId, type) {
+        const page = state.pages.find(p => p.id === state.currentPageId);
+        if (!page) return;
+        if (!page.votes) page.votes = {};
+
+        page.votes[workerId] = page.votes[workerId] === type ? null : type;
+        saveState();
+        render();
+    }
+
+    function addWorker() {
+        const input = document.getElementById('newWorkerName');
+        const name = input.value.trim();
+        if (!name) return;
+
+        state.workers.push({ id: Date.now(), name: name });
+        input.value = '';
+        saveState();
+        render();
+    }
+
+    function createNewPage() {
+        const newPageId = Date.now();
+        const pageNumber = state.pages.length + 1;
+        state.pages.push({
+            id: newPageId,
+            name: `${pageNumber}. lapa`,
+            votes: {}
+        });
+        state.currentPageId = newPageId;
+        saveState();
+        render();
+    }
+
+    function resetAllData() {
+        if (confirm("Vai tiešām vēlaties dzēst visus datus un sākt no jauna?")) {
+            localStorage.removeItem('worker_app_state_v3');
+            initDefaultState();
+            render();
+        }
+    }
+
+    function exportDataJSON() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `uzskaite_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function exportPDF() {
+        window.print();
+    }
+
+    window.onload = loadState;
+</script>
+
+</body>
+</html>
