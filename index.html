@@ -16,7 +16,6 @@
             --card-bg: #ffffff;
             --text-color: #1e293b;
             --border-color: #cbd5e1;
-            --active-bg: #f1f5f9;
         }
 
         * {
@@ -45,29 +44,41 @@
         h1 {
             text-align: center;
             margin-top: 0;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             font-size: 20px;
             color: #0f172a;
         }
 
-        /* Controls / Page switching */
-        .controls {
+        /* Top Bar: Reset immediately under title */
+        .top-bar {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--border-color);
+            justify-content: flex-end;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Controls / Inputs */
+        .add-worker-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .add-worker-form input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
         }
 
         .page-tabs {
             display: flex;
             gap: 6px;
             overflow-x: auto;
-            padding-bottom: 4px;
-            max-width: 100%;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .tab-btn {
@@ -100,25 +111,14 @@
 
         .action-btn.new-page {
             background: var(--success-color);
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            margin-top: 12px;
         }
 
         .action-btn.danger {
             background: var(--danger-color);
-        }
-
-        /* Input section */
-        .add-worker-form {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .add-worker-form input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 14px;
         }
 
         /* Table styling */
@@ -152,7 +152,6 @@
             min-width: 130px;
         }
 
-        /* Compact status buttons */
         .status-btn {
             width: 100%;
             padding: 8px 4px;
@@ -178,40 +177,30 @@
             border-color: var(--danger-color);
         }
 
-        .status-btn.inactive {
-            opacity: 0.6;
-        }
-
         .total-cell {
             font-size: 15px;
             font-weight: bold;
             background-color: #f8fafc;
         }
 
-        .total-par {
-            color: var(--success-color);
-        }
-
-        .total-pret {
-            color: var(--danger-color);
-        }
+        .total-par { color: var(--success-color); }
+        .total-pret { color: var(--danger-color); }
 
         .footer-actions {
-            margin-top: 20px;
+            margin-top: 16px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             gap: 10px;
             flex-wrap: wrap;
         }
 
-        @media (max-width: 600px) {
-            th, td {
-                padding: 6px 4px;
-                font-size: 12px;
+        @media print {
+            .top-bar, .add-worker-form, .page-tabs, .action-btn, .footer-actions {
+                display: none !important;
             }
-            .status-btn {
-                padding: 6px 2px;
-                font-size: 12px;
+            .container {
+                box-shadow: none;
+                padding: 0;
             }
         }
     </style>
@@ -221,19 +210,21 @@
 <div class="container">
     <h1>Darbinieku Uzskaites Sistēma</h1>
 
-    <!-- Page navigation -->
-    <div class="controls">
-        <div class="page-tabs" id="pageTabs"></div>
-        <button class="action-btn new-page" onclick="createNewPage()">+ Jauna lapa</button>
+    <!-- 1. Reset button placed immediately under title -->
+    <div class="top-bar">
+        <button class="action-btn danger" onclick="resetAllData()">Atiestatīt visus datus</button>
     </div>
 
-    <!-- New worker input -->
+    <!-- 2. Add worker section -->
     <div class="add-worker-form">
         <input type="text" id="newWorkerName" placeholder="Ievadiet darbinieka vārdu...">
         <button class="action-btn" onclick="addWorker()">Pievienot darbinieku</button>
     </div>
 
-    <!-- Table -->
+    <!-- 3. Page tabs -->
+    <div class="page-tabs" id="pageTabs"></div>
+
+    <!-- 4. Table -->
     <div class="table-responsive">
         <table>
             <thead>
@@ -246,33 +237,34 @@
                 </tr>
             </thead>
             <tbody id="workerTableBody">
-                <!-- Dynamic content -->
+                <!-- Dynamic rows -->
             </tbody>
         </table>
     </div>
 
+    <!-- 5. "New Page" button under table -->
+    <button class="action-btn new-page" onclick="createNewPage()">+ Jauna lapa</button>
+
+    <!-- 6. Export/Print Actions -->
     <div class="footer-actions">
-        <button class="action-btn danger" onclick="resetAllData()">Atiestatīt visus datus</button>
-        <button class="action-btn" onclick="exportData()">Eksportēt datus (JSON)</button>
+        <button class="action-btn" onclick="exportDataJSON()">Eksportēt JSON</button>
+        <button class="action-btn" onclick="exportPDF()">Saglabāt PDF / Drukāt</button>
     </div>
 </div>
 
 <script>
-    // State management
     let state = {
-        workers: [], // [{ id: 1, name: 'Vārds' }]
-        pages: [],   // [{ id: 1, name: '1. lapa', votes: { workerId: 'par' | 'pret' | null } }]
+        workers: [],
+        pages: [],
         currentPageId: 1
     };
 
-    // Load from LocalStorage
     function loadState() {
-        const saved = localStorage.getItem('worker_app_state_v2');
+        const saved = localStorage.getItem('worker_app_state_v3');
         if (saved) {
             try {
                 state = JSON.parse(saved);
             } catch (e) {
-                console.error("Kļūda ielādējot datus", e);
                 initDefaultState();
             }
         } else {
@@ -296,7 +288,7 @@
     }
 
     function saveState() {
-        localStorage.setItem('worker_app_state_v2', JSON.stringify(state));
+        localStorage.setItem('worker_app_state_v3', JSON.stringify(state));
     }
 
     function render() {
@@ -329,7 +321,7 @@
         state.workers.forEach(worker => {
             const tr = document.createElement('tr');
 
-            // 1. Column: Name
+            // Name
             const tdName = document.createElement('td');
             tdName.className = 'worker-name';
             tdName.innerText = worker.name;
@@ -337,7 +329,7 @@
 
             const currentVote = currentPage.votes[worker.id] || null;
 
-            // 2. Column: "Par" button
+            // "Par"
             const tdPar = document.createElement('td');
             const btnPar = document.createElement('button');
             btnPar.className = `status-btn par-btn ${currentVote === 'par' ? 'active' : ''}`;
@@ -346,7 +338,7 @@
             tdPar.appendChild(btnPar);
             tr.appendChild(tdPar);
 
-            // 3. Column: "Pret" button
+            // "Pret"
             const tdPret = document.createElement('td');
             const btnPret = document.createElement('button');
             btnPret.className = `status-btn pret-btn ${currentVote === 'pret' ? 'active' : ''}`;
@@ -355,22 +347,19 @@
             tdPret.appendChild(btnPret);
             tr.appendChild(tdPret);
 
-            // Calculate totals across all pages
+            // Totals
             let totalPar = 0;
             let totalPret = 0;
-
             state.pages.forEach(p => {
                 if (p.votes[worker.id] === 'par') totalPar++;
                 if (p.votes[worker.id] === 'pret') totalPret++;
             });
 
-            // 4. Column: Total "Par"
             const tdTotalPar = document.createElement('td');
             tdTotalPar.className = 'total-cell total-par';
             tdTotalPar.innerText = totalPar;
             tr.appendChild(tdTotalPar);
 
-            // 5. Column: Total "Pret"
             const tdTotalPret = document.createElement('td');
             tdTotalPret.className = 'total-cell total-pret';
             tdTotalPret.innerText = totalPret;
@@ -383,17 +372,9 @@
     function toggleVote(workerId, type) {
         const page = state.pages.find(p => p.id === state.currentPageId);
         if (!page) return;
-
         if (!page.votes) page.votes = {};
 
-        if (page.votes[workerId] === type) {
-            // Cancel vote if clicked again
-            page.votes[workerId] = null;
-        } else {
-            // Assign new vote (mutually exclusive)
-            page.votes[workerId] = type;
-        }
-
+        page.votes[workerId] = page.votes[workerId] === type ? null : type;
         saveState();
         render();
     }
@@ -403,8 +384,7 @@
         const name = input.value.trim();
         if (!name) return;
 
-        const newId = Date.now();
-        state.workers.push({ id: newId, name: name });
+        state.workers.push({ id: Date.now(), name: name });
         input.value = '';
         saveState();
         render();
@@ -413,12 +393,11 @@
     function createNewPage() {
         const newPageId = Date.now();
         const pageNumber = state.pages.length + 1;
-        const newPage = {
+        state.pages.push({
             id: newPageId,
             name: `${pageNumber}. lapa`,
-            votes: {} // All workers inactive by default in new page
-        };
-        state.pages.push(newPage);
+            votes: {}
+        });
         state.currentPageId = newPageId;
         saveState();
         render();
@@ -426,23 +405,26 @@
 
     function resetAllData() {
         if (confirm("Vai tiešām vēlaties dzēst visus datus un sākt no jauna?")) {
-            localStorage.removeItem('worker_app_state_v2');
+            localStorage.removeItem('worker_app_state_v3');
             initDefaultState();
             render();
         }
     }
 
-    function exportData() {
+    function exportDataJSON() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
         const downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `uzskaite_dati_${new Date().toISOString().slice(0,10)}.json`);
+        downloadAnchor.setAttribute("download", `uzskaite_${new Date().toISOString().slice(0,10)}.json`);
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
     }
 
-    // Initialize on load
+    function exportPDF() {
+        window.print();
+    }
+
     window.onload = loadState;
 </script>
 
