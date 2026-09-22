@@ -2,935 +2,449 @@
 <html lang="lv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>1. saraksts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Uzskaite">
+    <title>Darbinieku Uzskaites Sistēma</title>
     <style>
         :root {
-            --bg-color: #f1f5f9;
+            --primary-color: #2563eb;
+            --success-color: #16a34a;
+            --danger-color: #dc2626;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success: #16a34a;
-            --success-bg: #dcfce7;
-            --danger: #dc2626;
-            --danger-bg: #fee2e2;
-            --warning: #d97706;
+            --text-color: #1e293b;
             --border-color: #cbd5e1;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --radius: 12px;
+            --active-bg: #f1f5f9;
         }
 
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
+            margin: 0;
+            padding: 12px;
             background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 16px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            color: var(--text-color);
+            font-size: 14px;
         }
 
         .container {
-            width: 100%;
-            max-width: 1100px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        /* Header UI */
-        header {
-            background: var(--card-bg);
-            padding: 20px 24px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-md);
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 20px;
+            color: #0f172a;
+        }
+
+        /* Controls / Page switching */
+        .controls {
             display: flex;
             flex-wrap: wrap;
+            gap: 10px;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
         }
 
-        header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-main);
+        .page-tabs {
             display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .badge-offline {
-            background: #e2e8f0;
-            color: #334155;
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        /* Control Panel / Add Form */
-        .add-card {
-            background: var(--card-bg);
-            padding: 16px 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .input-group {
-            flex: 1;
-            display: flex;
-            gap: 10px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 14px 18px;
-            font-size: 1.1rem;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius);
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--primary);
-        }
-
-        /* Summary Dashboard */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .page-navigation {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            gap: 6px;
             overflow-x: auto;
-            padding: 8px 0;
-            margin-bottom: 8px;
+            padding-bottom: 4px;
+            max-width: 100%;
         }
 
-        .page-tab {
-            padding: 10px 18px;
+        .tab-btn {
             background: #e2e8f0;
-            color: var(--text-main);
-            border-radius: var(--radius);
-            font-weight: 700;
-            font-size: 0.95rem;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
             cursor: pointer;
-            border: 2px solid transparent;
             white-space: nowrap;
         }
 
-        .page-tab.active {
-            background: var(--primary);
+        .tab-btn.active {
+            background: var(--primary-color);
             color: white;
-            border-color: var(--primary-hover);
         }
 
-        .summary-card {
-            background: var(--card-bg);
-            padding: 14px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            text-align: center;
+        .action-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .action-btn.new-page {
+            background: var(--success-color);
+        }
+
+        .action-btn.danger {
+            background: var(--danger-color);
+        }
+
+        /* Input section */
+        .add-worker-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .add-worker-form input {
+            flex: 1;
+            padding: 8px 12px;
             border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
         }
 
-        .summary-card .val {
-            font-size: 1.6rem;
-            font-weight: 800;
-            margin-top: 4px;
-        }
-
-        .summary-card.plus .val { color: var(--success); }
-        .summary-card.minus .val { color: var(--danger); }
-        .summary-card.total .val { color: var(--primary); }
-
-        .summary-card .lbl {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        /* Main Table Styling */
-        .table-container {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
+        /* Table styling */
+        .table-responsive {
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            text-align: left;
+            text-align: center;
         }
 
-        th {
-            background-color: #f8fafc;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 16px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        td {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-color);
+        th, td {
+            padding: 8px 6px;
+            border: 1px solid var(--border-color);
             vertical-align: middle;
         }
 
-        tr:last-child td {
-            border-bottom: none;
+        th {
+            background-color: #f1f5f9;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
         }
 
-        tr:nth-child(even) {
+        td.worker-name {
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            min-width: 130px;
+        }
+
+        /* Compact status buttons */
+        .status-btn {
+            width: 100%;
+            padding: 8px 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: #f8fafc;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.15s ease;
+        }
+
+        .status-btn.par-btn.active {
+            background-color: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .status-btn.pret-btn.active {
+            background-color: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+        }
+
+        .status-btn.inactive {
+            opacity: 0.6;
+        }
+
+        .total-cell {
+            font-size: 15px;
+            font-weight: bold;
             background-color: #f8fafc;
         }
 
-        /* Mutual Exclusivity Status Badges */
-        .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.9rem;
+        .total-par {
+            color: var(--success-color);
         }
 
-        .status-badge.plus {
-            background-color: var(--success-bg);
-            color: var(--success);
-            border: 1px solid var(--success);
+        .total-pret {
+            color: var(--danger-color);
         }
 
-        .status-badge.minus {
-            background-color: var(--danger-bg);
-            color: var(--danger);
-            border: 1px solid var(--danger);
-            text-decoration: line-through;
-        }
-
-        .status-badge.none {
-            background-color: #f1f5f9;
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            font-weight: normal;
-        }
-
-        /* Specific Columns */
-        .col-name {
-            width: 25%;
-            font-weight: 600;
-            font-size: 1.15rem;
-        }
-
-        .col-action {
-            width: 20%;
-            text-align: center;
-        }
-
-        .col-stat {
-            width: 15%;
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-
-        .col-stat.plus-val {
-            color: var(--success);
-            background-color: rgba(22, 163, 74, 0.05);
-        }
-
-        .col-stat.minus-val {
-            color: var(--danger);
-            background-color: rgba(220, 38, 38, 0.05);
-        }
-
-        /* Touch-Friendly Action Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: var(--radius);
-            border: none;
-            cursor: pointer;
-            transition: all 0.15s ease-in-out;
-            user-select: none;
-            gap: 6px;
-        }
-
-        .btn:active {
-            transform: scale(0.96);
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        .btn-primary:hover { background-color: var(--primary-hover); }
-
-        .btn-success {
-            background-color: var(--success-bg);
-            color: var(--success);
-            border: 2px solid var(--success);
-            font-size: 1.1rem;
-            width: 100%;
-            max-width: 150px;
-            padding: 12px 0;
-        }
-        .btn-success:active, .btn-success.active {
-            background-color: var(--success);
-            color: white;
-        }
-
-        .btn-danger-action {
-            background-color: var(--danger-bg);
-            color: var(--danger);
-            border: 2px solid var(--danger);
-            font-size: 1.1rem;
-            width: 100%;
-            max-width: 150px;
-            padding: 12px 0;
-        }
-        .btn-danger-action:active, .btn-danger-action.active {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 14px;
-            font-size: 0.9rem;
-        }
-        .btn-outline:hover {
-            background-color: #f1f5f9;
-        }
-
-        .btn-icon {
-            padding: 8px;
-            border-radius: 8px;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-        .btn-icon:hover {
-            background: #e2e8f0;
-            color: var(--text-main);
-        }
-        .btn-icon.delete:hover {
-            background: var(--danger-bg);
-            color: var(--danger);
-        }
-
-        .row-actions {
+        .footer-actions {
+            margin-top: 20px;
             display: flex;
-            gap: 4px;
-            justify-content: flex-end;
-        }
-
-        .mini-btn {
-            font-size: 0.8rem;
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            background: #fff;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-
-        /* Empty State */
-        .empty-state {
-            padding: 48px 16px;
-            text-align: center;
-            color: var(--text-muted);
-        }
-        .empty-state p {
-            margin-top: 8px;
-            font-size: 1rem;
-        }
-
-        /* Modal Overlay */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(15, 23, 42, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal {
-            background: white;
-            padding: 24px;
-            border-radius: var(--radius);
-            width: 90%;
-            max-width: 450px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .modal h3 {
-            font-size: 1.25rem;
-        }
-
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             gap: 10px;
-            margin-top: 8px;
+            flex-wrap: wrap;
         }
 
-        /* Print optimization */
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-            .header-actions, .add-card, .row-actions, .btn-success, .btn-danger-action {
-                display: none !important;
-            }
-            .container {
-                max-width: 100%;
-            }
-            .table-container {
-                box-shadow: none;
-                border: none;
-            }
+        @media (max-width: 600px) {
             th, td {
-                border: 1px solid #000;
+                padding: 6px 4px;
+                font-size: 12px;
             }
-        }
-
-        /* Responsive Tweaks for smaller screens */
-        @media (max-width: 768px) {
-            .col-name { width: 25%; font-size: 1rem; }
-            .col-action { width: 22%; }
-            .col-stat { width: 15.5%; font-size: 1.1rem; }
-            .btn-success, .btn-danger-action {
-                font-size: 1.1rem;
-                padding: 8px 0;
-            }
-            td, th {
-                padding: 8px 6px;
+            .status-btn {
+                padding: 6px 2px;
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        
-        <!-- Header -->
-        <header>
-            <div>
-                <h1>
-                    Uzskaites Sistēma 
-                    <span class="badge-offline">Bezsaistes režīms</span>
-                </h1>
-            </div>
-            <div class="header-actions">
-                <button class="btn btn-outline" onclick="exportData()" title="Lejupielādēt kā JSON">Eksportēt</button>
-                <button class="btn btn-outline" onclick="triggerImport()" title="Ielādēt no faila">Importēt</button>
-                <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(event)">
-                <button class="btn btn-outline" onclick="window.print()">Drukāt / PDF</button>
-                <button class="btn btn-outline" style="color: var(--danger); border-color: var(--danger-bg);" onclick="confirmReset()">Nodzēst visu</button>
-            </div>
-        </header>
+<div class="container">
+    <h1>Darbinieku Uzskaites Sistēma</h1>
 
-        <!-- Form for New Entry -->
-        <div class="add-card">
-            <form id="addForm" class="input-group" onsubmit="handleAddWorker(event)">
-                <input type="text" id="workerName" placeholder="Ievadiet darbinieka vārdu..." autocomplete="off" required>
-                <button type="submit" class="btn btn-primary">+ Pievienot Vārdu</button>
-            </form>
-        </div>
-
-        <!-- Summary Dashboard -->
-        <div class="summary-grid">
-            <div class="summary-card total">
-                <div class="lbl">Aktīvā Lapa / Kopā Lapas</div>
-                <div class="val" id="statPages">1 / 1</div>
-            </div>
-            <div class="summary-card plus">
-                <div class="lbl">Kopējie Plusi (Visas lapas)</div>
-                <div class="val" id="statPluses">0</div>
-            </div>
-            <div class="summary-card minus">
-                <div class="lbl">Kopā Nosvītroti (Visas lapas)</div>
-                <div class="val" id="statMinuses">0</div>
-            </div>
-        </div>
-
-        <!-- Page Navigation Bar -->
-        <div class="page-navigation" id="pageTabsContainer">
-            <!-- Dynamic page tabs will be rendered here -->
-        </div>
-
-        <!-- Data Table -->
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th class="col-name">1. Vārds</th>
-                        <th class="col-action">2. Pievienot (+)</th>
-                        <th class="col-action">3. Nosvītrot (̶)̶</th>
-                        <th class="col-stat">4. Kopā Plusi (Visi)</th>
-                        <th class="col-stat">5. Kopā Nosvītroti (Visi)</th>
-                        <th style="width: 5%; text-align: right;"></th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <!-- Dynamic Rows Will Be Inserted Here -->
-                </tbody>
-            </table>
-            <div id="emptyState" class="empty-state" style="display: none;">
-                <h3>Nav pievienots neviens ieraksts</h3>
-                <p>Izmantojiet lauku augstāk, lai pievienotu pirmo darbinieku.</p>
-            </div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 12px; flex-wrap: wrap;">
-            <button class="btn btn-primary" style="padding: 16px 28px; font-size: 1.15rem; background-color: #059669; flex: 1; max-width: 300px;" onclick="createNewPage()">
-                📑 + Jauna Lapa
-            </button>
-            <span style="font-size: 0.9rem; color: var(--text-muted);">* Izveidojot jaunu lapu, statusi kļūst neaktīvi līdz nākamajam spiedienam, bet kopējie rezultāti saglabājas.</span>
-        </div>
-
+    <!-- Page navigation -->
+    <div class="controls">
+        <div class="page-tabs" id="pageTabs"></div>
+        <button class="action-btn new-page" onclick="createNewPage()">+ Jauna lapa</button>
     </div>
 
-    <!-- Confirm Modal -->
-    <div class="modal-overlay" id="confirmModal">
-        <div class="modal">
-            <h3 id="modalTitle">Vai esat pārliecināts?</h3>
-            <p id="modalMessage">Šī darbība ir neatgriezeniska.</p>
-            <div class="modal-buttons">
-                <button class="btn btn-outline" onclick="closeModal()">Atcelt</button>
-                <button class="btn btn-primary" id="modalConfirmBtn" style="background-color: var(--danger);">Apstiprināt</button>
-            </div>
-        </div>
+    <!-- New worker input -->
+    <div class="add-worker-form">
+        <input type="text" id="newWorkerName" placeholder="Ievadiet darbinieka vārdu...">
+        <button class="action-btn" onclick="addWorker()">Pievienot darbinieku</button>
     </div>
 
-    <!-- Edit Name Modal -->
-    <div class="modal-overlay" id="editModal">
-        <div class="modal">
-            <h3>Rediģēt vārdu</h3>
-            <input type="text" id="editWorkerName" placeholder="Jaunais vārds">
-            <div class="modal-buttons">
-                <button class="btn btn-outline" onclick="closeEditModal()">Atcelt</button>
-                <button class="btn btn-primary" onclick="saveWorkerName()">Saglabāt</button>
-            </div>
-        </div>
+    <!-- Table -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 28%;">Vārds</th>
+                    <th style="width: 18%;">Par</th>
+                    <th style="width: 18%;">Pret</th>
+                    <th style="width: 18%;">Kopā "Par"</th>
+                    <th style="width: 18%;">Kopā "Pret"</th>
+                </tr>
+            </thead>
+            <tbody id="workerTableBody">
+                <!-- Dynamic content -->
+            </tbody>
+        </table>
     </div>
 
-    <script>
-        const STORAGE_KEY = 'UzskaitesSistema_Data_v2';
-        
-        // App State
-        let state = {
-            activePageIndex: 0,
-            pages: [
-                // Page object structure: { id: 1, name: "1. lapa", entries: { workerId: 'none'|'plus'|'minus' } }
-            ],
-            workers: [
-                // Worker structure: { id: 1, name: "Vārds" }
-            ]
-        };
+    <div class="footer-actions">
+        <button class="action-btn danger" onclick="resetAllData()">Atiestatīt visus datus</button>
+        <button class="action-btn" onclick="exportData()">Eksportēt datus (JSON)</button>
+    </div>
+</div>
 
-        let editingWorkerId = null;
-        let pendingAction = null;
+<script>
+    // State management
+    let state = {
+        workers: [], // [{ id: 1, name: 'Vārds' }]
+        pages: [],   // [{ id: 1, name: '1. lapa', votes: { workerId: 'par' | 'pret' | null } }]
+        currentPageId: 1
+    };
 
-        // Load data on start
-        window.addEventListener('DOMContentLoaded', () => {
-            loadData();
-            render();
-        });
-
-        // Save state to LocalStorage
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        }
-
-        // Load state from LocalStorage
-        function loadData() {
-            const data = localStorage.getItem(STORAGE_KEY);
-            if (data) {
-                try {
-                    state = JSON.parse(data);
-                } catch (e) {
-                    console.error("Kļūda ielādējot datus:", e);
-                    initDefaultState();
-                }
-            } else {
+    // Load from LocalStorage
+    function loadState() {
+        const saved = localStorage.getItem('worker_app_state_v2');
+        if (saved) {
+            try {
+                state = JSON.parse(saved);
+            } catch (e) {
+                console.error("Kļūda ielādējot datus", e);
                 initDefaultState();
             }
+        } else {
+            initDefaultState();
         }
+        render();
+    }
 
-        function initDefaultState() {
-            state = {
-                activePageIndex: 0,
-                pages: [
-                    { id: Date.now(), name: "1. Lapa", entries: {} }
-                ],
-                workers: [
-                    { id: 101, name: "Jānis Bērziņš" },
-                    { id: 102, name: "Anna Kalniņa" }
-                ]
-            };
-            saveData();
-        }
+    function initDefaultState() {
+        state = {
+            workers: [
+                { id: 1, name: 'Jānis Bērziņš' },
+                { id: 2, name: 'Pēteris Kļaviņš' }
+            ],
+            pages: [
+                { id: 1, name: '1. lapa', votes: {} }
+            ],
+            currentPageId: 1
+        };
+        saveState();
+    }
 
-        // Create a new page
-        function createNewPage() {
-            const pageNumber = state.pages.length + 1;
-            const newPage = {
-                id: Date.now(),
-                name: `${pageNumber}. Lapa`,
-                entries: {} // All workers start with inactive/no state on new page
-            };
-            state.pages.push(newPage);
-            state.activePageIndex = state.pages.length - 1; // Switch to new page
-            saveData();
-            render();
-        }
+    function saveState() {
+        localStorage.setItem('worker_app_state_v2', JSON.stringify(state));
+    }
 
-        function switchPage(index) {
-            if (index >= 0 && index < state.pages.length) {
-                state.activePageIndex = index;
-                saveData();
+    function render() {
+        renderTabs();
+        renderTable();
+    }
+
+    function renderTabs() {
+        const tabsContainer = document.getElementById('pageTabs');
+        tabsContainer.innerHTML = '';
+        state.pages.forEach(page => {
+            const btn = document.createElement('button');
+            btn.className = `tab-btn ${page.id === state.currentPageId ? 'active' : ''}`;
+            btn.innerText = page.name;
+            btn.onclick = () => {
+                state.currentPageId = page.id;
+                saveState();
                 render();
-            }
+            };
+            tabsContainer.appendChild(btn);
+        });
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('workerTableBody');
+        tbody.innerHTML = '';
+
+        const currentPage = state.pages.find(p => p.id === state.currentPageId) || state.pages[0];
+
+        state.workers.forEach(worker => {
+            const tr = document.createElement('tr');
+
+            // 1. Column: Name
+            const tdName = document.createElement('td');
+            tdName.className = 'worker-name';
+            tdName.innerText = worker.name;
+            tr.appendChild(tdName);
+
+            const currentVote = currentPage.votes[worker.id] || null;
+
+            // 2. Column: "Par" button
+            const tdPar = document.createElement('td');
+            const btnPar = document.createElement('button');
+            btnPar.className = `status-btn par-btn ${currentVote === 'par' ? 'active' : ''}`;
+            btnPar.innerText = currentVote === 'par' ? '✓ Par' : 'par';
+            btnPar.onclick = () => toggleVote(worker.id, 'par');
+            tdPar.appendChild(btnPar);
+            tr.appendChild(tdPar);
+
+            // 3. Column: "Pret" button
+            const tdPret = document.createElement('td');
+            const btnPret = document.createElement('button');
+            btnPret.className = `status-btn pret-btn ${currentVote === 'pret' ? 'active' : ''}`;
+            btnPret.innerText = currentVote === 'pret' ? '✕ Pret' : 'pret';
+            btnPret.onclick = () => toggleVote(worker.id, 'pret');
+            tdPret.appendChild(btnPret);
+            tr.appendChild(tdPret);
+
+            // Calculate totals across all pages
+            let totalPar = 0;
+            let totalPret = 0;
+
+            state.pages.forEach(p => {
+                if (p.votes[worker.id] === 'par') totalPar++;
+                if (p.votes[worker.id] === 'pret') totalPret++;
+            });
+
+            // 4. Column: Total "Par"
+            const tdTotalPar = document.createElement('td');
+            tdTotalPar.className = 'total-cell total-par';
+            tdTotalPar.innerText = totalPar;
+            tr.appendChild(tdTotalPar);
+
+            // 5. Column: Total "Pret"
+            const tdTotalPret = document.createElement('td');
+            tdTotalPret.className = 'total-cell total-pret';
+            tdTotalPret.innerText = totalPret;
+            tr.appendChild(tdTotalPret);
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    function toggleVote(workerId, type) {
+        const page = state.pages.find(p => p.id === state.currentPageId);
+        if (!page) return;
+
+        if (!page.votes) page.votes = {};
+
+        if (page.votes[workerId] === type) {
+            // Cancel vote if clicked again
+            page.votes[workerId] = null;
+        } else {
+            // Assign new vote (mutually exclusive)
+            page.votes[workerId] = type;
         }
 
-        // Add new worker
-        function handleAddWorker(e) {
-            e.preventDefault();
-            const input = document.getElementById('workerName');
-            const name = input.value.trim();
+        saveState();
+        render();
+    }
 
-            if (name) {
-                const newWorker = {
-                    id: Date.now(),
-                    name: name
-                };
-                state.workers.push(newWorker);
-                saveData();
-                render();
-                input.value = '';
-                input.focus();
-            }
-        }
+    function addWorker() {
+        const input = document.getElementById('newWorkerName');
+        const name = input.value.trim();
+        if (!name) return;
 
-        // Helper to get active page object
-        function getActivePage() {
-            return state.pages[state.activePageIndex] || state.pages[0];
-        }
+        const newId = Date.now();
+        state.workers.push({ id: newId, name: name });
+        input.value = '';
+        saveState();
+        render();
+    }
 
-        // Mutual exclusivity & activation logic for '+' button
-        function addPlus(workerId) {
-            const activePage = getActivePage();
-            const currentStatus = activePage.entries[workerId] || 'none';
+    function createNewPage() {
+        const newPageId = Date.now();
+        const pageNumber = state.pages.length + 1;
+        const newPage = {
+            id: newPageId,
+            name: `${pageNumber}. lapa`,
+            votes: {} // All workers inactive by default in new page
+        };
+        state.pages.push(newPage);
+        state.currentPageId = newPageId;
+        saveState();
+        render();
+    }
 
-            if (currentStatus === 'plus') {
-                // Deactivate if clicked again
-                activePage.entries[workerId] = 'none';
-            } else {
-                // Set to plus (automatically removes 'minus')
-                activePage.entries[workerId] = 'plus';
-            }
-            
-            saveData();
+    function resetAllData() {
+        if (confirm("Vai tiešām vēlaties dzēst visus datus un sākt no jauna?")) {
+            localStorage.removeItem('worker_app_state_v2');
+            initDefaultState();
             render();
         }
+    }
 
-        // Mutual exclusivity & activation logic for 'Nosvītrot' button
-        function addMinus(workerId) {
-            const activePage = getActivePage();
-            const currentStatus = activePage.entries[workerId] || 'none';
+    function exportData() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `uzskaite_dati_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
 
-            if (currentStatus === 'minus') {
-                // Deactivate if clicked again
-                activePage.entries[workerId] = 'none';
-            } else {
-                // Set to minus (automatically removes 'plus')
-                activePage.entries[workerId] = 'minus';
-            }
-            
-            saveData();
-            render();
-        }
+    // Initialize on load
+    window.onload = loadState;
+</script>
 
-        // Calculate total count across ALL pages for a worker
-        function getWorkerTotals(workerId) {
-            let totalPluses = 0;
-            let totalMinuses = 0;
-
-            state.pages.forEach(page => {
-                const status = page.entries[workerId];
-                if (status === 'plus') totalPluses++;
-                if (status === 'minus') totalMinuses++;
-            });
-
-            return { totalPluses, totalMinuses };
-        }
-
-        function render() {
-            const tbody = document.getElementById('tableBody');
-            const emptyState = document.getElementById('emptyState');
-            const pageTabsContainer = document.getElementById('pageTabsContainer');
-
-            // Render Page Navigation Tabs
-            pageTabsContainer.innerHTML = '';
-            state.pages.forEach((page, idx) => {
-                const btn = document.createElement('button');
-                btn.className = `page-tab ${idx === state.activePageIndex ? 'active' : ''}`;
-                btn.innerText = page.name;
-                btn.onclick = () => switchPage(idx);
-                pageTabsContainer.appendChild(btn);
-            });
-
-            tbody.innerHTML = '';
-
-            let grandTotalPluses = 0;
-            let grandTotalMinuses = 0;
-
-            // Calculate Grand Totals across all pages
-            state.workers.forEach(w => {
-                const totals = getWorkerTotals(w.id);
-                grandTotalPluses += totals.totalPluses;
-                grandTotalMinuses += totals.totalMinuses;
-            });
-
-            if (state.workers.length === 0) {
-                emptyState.style.display = 'block';
-            } else {
-                emptyState.style.display = 'none';
-
-                const activePage = getActivePage();
-
-                state.workers.forEach(worker => {
-                    const currentStatus = activePage.entries[worker.id] || 'none';
-                    const isPlusActive = currentStatus === 'plus';
-                    const isMinusActive = currentStatus === 'minus';
-
-                    const { totalPluses, totalMinuses } = getWorkerTotals(worker.id);
-
-                    const tr = document.createElement('tr');
-
-                    tr.innerHTML = `
-                        <td class="col-name">
-                            <span onclick="openEditModal(${worker.id})" style="cursor: pointer;" title="Nospiediet, lai mainītu vārdu">
-                                ${escapeHtml(worker.name)}
-                            </span>
-                            <div class="row-actions">
-                                <button class="mini-btn" onclick="openEditModal(${worker.id})">✏️ labot</button>
-                            </div>
-                        </td>
-                        <td class="col-action">
-                            <button class="btn btn-success ${isPlusActive ? 'active' : ''}" onclick="addPlus(${worker.id})">
-                                + 1 ${isPlusActive ? '✓' : ''}
-                            </button>
-                        </td>
-                        <td class="col-action">
-                            <button class="btn btn-danger-action ${isMinusActive ? 'active' : ''}" onclick="addMinus(${worker.id})">
-                                ̶N̶o̶s̶v̶ī̶t̶r̶o̶t̶ ${isMinusActive ? '✓' : ''}
-                            </button>
-                        </td>
-                        <td class="col-stat plus-val">
-                            ${totalPluses}
-                        </td>
-                        <td class="col-stat minus-val">
-                            ${totalMinuses}
-                        </td>
-                        <td style="text-align: right;">
-                            <button class="btn-icon delete" onclick="confirmDelete(${worker.id})" title="Dzēst ierakstu">
-                                🗑️
-                            </button>
-                        </td>
-                    `;
-
-                    tbody.appendChild(tr);
-                });
-            }
-
-            // Update stats
-            document.getElementById('statPages').innerText = `${state.activePageIndex + 1} / ${state.pages.length}`;
-            document.getElementById('statPluses').innerText = grandTotalPluses;
-            document.getElementById('statMinuses').innerText = grandTotalMinuses;
-        }
-
-        // Open edit name modal
-        function openEditModal(id) {
-            const worker = state.workers.find(w => w.id === id);
-            if (worker) {
-                editingWorkerId = id;
-                document.getElementById('editWorkerName').value = worker.name;
-                document.getElementById('editModal').classList.add('active');
-            }
-        }
-
-        function closeEditModal() {
-            editingWorkerId = null;
-            document.getElementById('editModal').classList.remove('active');
-        }
-
-        function saveWorkerName() {
-            const newName = document.getElementById('editWorkerName').value.trim();
-            if (newName && editingWorkerId) {
-                const worker = state.workers.find(w => w.id === editingWorkerId);
-                if (worker) {
-                    worker.name = newName;
-                    saveData();
-                    render();
-                }
-            }
-            closeEditModal();
-        }
-
-        // Delete worker confirmation
-        function confirmDelete(id) {
-            const worker = state.workers.find(w => w.id === id);
-            if (!worker) return;
-
-            showModal(
-                "Dzēst ierakstu",
-                `Vai tiešām vēlaties dzēst darbinieku "${worker.name}"? Visi viņa dati no visām lapām tiks dzēsti.`,
-                () => {
-                    state.workers = state.workers.filter(w => w.id !== id);
-                    saveData();
-                    render();
-                }
-            );
-        }
-
-        // Clear all data
-        function confirmReset() {
-            showModal(
-                "Nodzēst visus datus",
-                "Vai tiešām vēlaties dzēst VISAS lapas un darbiniekus? Šī darbība nav atsaucama.",
-                () => {
-                    initDefaultState();
-                    render();
-                }
-            );
-        }
-
-        // Helpers & Utilities
-        function escapeHtml(string) {
-            const div = document.createElement('div');
-            div.innerText = string;
-            return div.innerHTML;
-        }
-
-        // Modal Logic
-        function showModal(title, message, onConfirm) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalMessage').innerText = message;
-            
-            pendingAction = onConfirm;
-            
-            const confirmBtn = document.getElementById('modalConfirmBtn');
-            confirmBtn.onclick = () => {
-                if (pendingAction) pendingAction();
-                closeModal();
-            };
-
-            document.getElementById('confirmModal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('confirmModal').classList.remove('active');
-            pendingAction = null;
-        }
-
-        // Export/Import JSON Data
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `uzskaite_lapas_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        function triggerImport() {
-            document.getElementById('importFile').click();
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (imported && Array.isArray(imported.pages) && Array.isArray(imported.workers)) {
-                        state = imported;
-                        saveData();
-                        render();
-                        alert('Dati veiksmīgi ielādēti!');
-                    } else {
-                        alert('Nederīgs faila formāts.');
-                    }
-                } catch (err) {
-                    alert('Kļūda nolasot failu: ' + err.message);
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
-        }
-    </script>
 </body>
 </html>
